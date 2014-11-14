@@ -6,12 +6,13 @@ from bs4 import BeautifulSoup
 f = open('TVtracker.html', 'w')
 
 def matchTV_tencent(url, title):
-    content = urllib2.urlopen(url)
-    pattern = re.compile('<ul class="album_list" id="mod_videolist">([\s\S]*?)</ul>')
-    html = content.read()
-    match = pattern.search(html)
-    f.write('<h3>'+title+'</h3>')
-    f.write(match.group())
+    content = urllib2.urlopen(url).read()
+    bs = BeautifulSoup(content)
+    a_list = bs.find('ul', id='mod_videolist').find_all('a')
+    j = 0
+    for i in a_list:
+        j = j + 1
+        print 'http://v.qq.com' + i['href']
 
 def matchTV_youku(url, title):
     content = urllib2.urlopen(url)
