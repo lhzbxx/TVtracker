@@ -69,8 +69,14 @@ drop table if exists dream;
 create table dream (
     id integer primary key autoincrement,
     # 编号
-    name text not null
+    name text not null,
     # 剧集名称
+    link_youku text,
+    # 剧集的地址
+    link_iqiyi text,
+    # 剧集的地址
+    link_vqq text
+    # 剧集的地址
 );
 
 drop table if exists tracking;

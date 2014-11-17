@@ -40,7 +40,10 @@ create table discuss (
 drop table if exists dream;
 create table dream (
     id integer primary key autoincrement,
-    name text not null
+    name text not null,
+    link_youku text,
+    link_iqiyi text,
+    link_vqq text
 );
 
 drop table if exists tracking;
@@ -50,4 +53,13 @@ create table tracking (
     userid integer not null,
     epnum integer not null default 0,
     end integer not null default 0
+);
+
+drop table if exists notification;
+create table notification (
+    id integer primary key autoincrement,
+    username text not null,
+    userid integer not null,
+    content integer not null default 0,
+    link integer not null default 0
 );

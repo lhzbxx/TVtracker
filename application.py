@@ -115,6 +115,26 @@ def talkPage():
     else:
         return redirect(url_for('welcome'))
 
+# 搜索框。
+@app.route('/hint', methods=['GET'])
+def hint():
+    tv = None
+    user = None
+    str = '%' + request.args.get('str', '') + '%'
+    if str:
+        tv = query_db('select name from dream where name like ?', [str])
+        user = query_db('select username from user where username like ?', [str])
+    result = {'tv': tv, 'user': user}
+    return jsonify(result)
+
+# 添加剧集。
+@app.route('/hint', methods=['GET'])
+def hint():
+    tvname = request.args.get('tv', '')
+    g.db.execute('update user set nicecard = ? where username = ?', [nicecard_new, session['username']])
+    g.db.commit()
+    return redirect(url_for('welcome'))
+
 @app.route('/test/<username>')
 def show_user_profile(username):
     return '你好 %s' % username
