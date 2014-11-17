@@ -122,17 +122,22 @@ def hint():
     user = None
     str = '%' + request.args.get('str', '') + '%'
     if str:
-        tv = query_db('select name from dream where name like ?', [str])
-        user = query_db('select username from user where username like ?', [str])
+        tv = query_db('select name from dream where name like ? limit 5', [str])
+        user = query_db('select username from user where username like ? limit 5', [str])
     result = {'tv': tv, 'user': user}
     return jsonify(result)
 
 # 添加剧集。
-@app.route('/hint', methods=['GET'])
-def hint():
-    tvname = request.args.get('tv', '')
-    g.db.execute('update user set nicecard = ? where username = ?', [nicecard_new, session['username']])
-    g.db.commit()
+@app.route('/addTV', methods=['GET'])
+def addTV():
+    if session.get('logged_in'):
+        tvname = request.args.get('tv', '')
+        userid = query_db('select id from user where username = ?', [session['username']], one=True)
+        if query_db('select id from tracking where tvname = ? and userid = ?', [tvname, userid['id']], one=True):
+            pass
+        else:
+            g.db.execute('insert into tracking (tvname, userid) values (?, ?)', [tvname, userid['id']])
+            g.db.commit()
     return redirect(url_for('welcome'))
 
 @app.route('/test/<username>')

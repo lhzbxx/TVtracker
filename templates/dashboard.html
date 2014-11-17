@@ -97,7 +97,7 @@
           S1 = S1 + "<li role='presentation'><a role='menuitem' tabindex='-1'><span class='glyphicon glyphicon-user'></span>&nbsp;&nbsp;&nbsp;" + result["user"][i]["username"] + "</a></li>";
         }
         for (i in result["tv"]) {
-          S2 = S2 + "<li role='presentation'><a role='menuitem' tabindex='-1' href='{{ url_for(addTV) }}?tv=" + result["tv"][i]["name"] + "'><span class='glyphicon glyphicon-plus'></span>&nbsp;&nbsp;&nbsp;" + result["tv"][i]["name"] + "</li>";
+          S2 = S2 + "<li role='presentation'><a role='menuitem' tabindex='-1' href='{{ url_for('addTV') }}?tv=" + result["tv"][i]["name"] + "'><span class='glyphicon glyphicon-plus'></span>&nbsp;&nbsp;&nbsp;" + result["tv"][i]["name"] + "</li>";
         }
         if (S1 == tmp1)
           S1 = S1 + "<li role='presentation' class='dropdown-header'>未找到该用户</a></li>";

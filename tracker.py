@@ -3,17 +3,23 @@ import urllib2
 import re
 from bs4 import BeautifulSoup
 import PyV8
+import time
+import sched
+import sqlite3
 
-f = open('TVtracker.html', 'w')
+conn = sqlite3.connect(r'database/eh.db')
 
-def matchTV_tencent(url, title):
+def matchTV_vqq(url, title):
     content = urllib2.urlopen(url).read()
     bs = BeautifulSoup(content)
     a_list = bs.find('ul', id='mod_videolist').find_all('a')
     j = 0
     for i in a_list:
         j = j + 1
-        print 'http://v.qq.com' + i['href']
+        cursor = conn.execute("SELECT id from tv where episode = ? and type = ?", (j, 'vqq',))
+        if cursor.fetchall() == []:
+            conn.execute("INSERT INTO tv (tvname, episode, address, type) VALUES (?, ?, ?, ?)", (title, j, 'http://v.qq.com' + i['href'], 'vqq'));
+            conn.commit()
 
 def matchTV_youku(url, title):
     content = urllib2.urlopen(url).read()
@@ -22,7 +28,10 @@ def matchTV_youku(url, title):
     j = 0
     for i in a_list:
         j = j + 1
-        print i['href']
+        cursor = conn.execute("SELECT id from tv where episode = ? and type = ?", (j, 'youku',))
+        if cursor.fetchall() == []:
+            conn.execute("INSERT INTO tv (tvname, episode, address, type) VALUES (?, ?, ?, ?)", (title, j, i['href'], 'youku'));
+            conn.commit()
 
 def matchTV_iqiyi(url, title):
     content = urllib2.urlopen(url).read()
@@ -57,6 +66,23 @@ def matchTV_acfun(url, title):
     #     j = j + 1
     #     print i['href']
 
+def scan():
+    tv = conn.execute('select name, link_youku, link_vqq, link_iqiyi from dream');
+    for i in tv:
+        if i[1]:
+            matchTV_youku(i[1], i[0])
+        if i[3]:
+            matchTV_iqiyi(i[3], i[0])
+        if i[2]:
+            matchTV_vqq(i[2], i[0])
+
+def init(inc):
+    schedule.enter(inc, 0, init, (inc,))
+    scan()
+
+schedule = sched.scheduler(time.time, time.sleep)
+schedule.enter(0, 0, init, (30,))
+schedule.run()
 # matchTV_youku('http://www.youku.com/show_page/id_z6ae8ab240d5d11e4b8b7.html', '妙警贼探第六季')
 # matchTV_tencent('http://v.qq.com/cover/8/8asm6qy0sj9gn4v/p0015qvsnvk.html', '再造淑女第一季')
 # matchTV_iqiyi('http://www.iqiyi.com/a_19rrifrm2n.html', '爱情公寓4')
