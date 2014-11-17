@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>登陆 - TVtracker</title>
+    <script>
+      document.write("<div id='loading' style='z-index:1;padding:5px 0 5px 9px;background:#c44;left:0;top:0;width:90px;color:#fff;position:fixed;'>正在加载...</div>")
+      setTimeout("document.getElementById('loading').innerHTML = '加载失败，网络错误！';", 3000)      
+    </script>
+  </head>
+  <body>
+
+    <div class="jumbotron" background="black">
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-lg-3 col-lg-offset-3 col-md-3 col-md-offset-2 col-sm-6 col-sm-offset-3 col-xs-10 col-xs-offset-1">
+            <h1><b>TVtracker</b></h1>
+            <span class="glyphicon glyphicon-share-alt"></span>
+            <a href="#tips"><span class="label label-default">行为指南</span></a>
+            <h3>属于你的追剧社交平台，不会错过每个你想要的精彩剧集。</h3>
+          </div>
+          <div class="col-lg-offset-1 col-md-3 col-md-offset-2 col-sm-4 col-sm-offset-4 col-xs-8 col-xs-offset-2">
+            <form class="form-signin" action="" method="POST" role="form" style="max-width:300px; margin: 0 auto;">
+              <h3 class="form-signin-heading"><span class="glyphicon glyphicon-hand-right"></span> Enter</h3>
+              <input type="text" name="username" class="form-control" placeholder="用户名" required autofocus>
+              <input type="password" name="password" class="form-control" placeholder="密码" required>
+              <div class="checkbox">
+                <label>
+                  <input name="is_remember_me" type="checkbox" value="1" checked> 记住我
+                </label>
+                <div class="pull-right">
+                  <span class="glyphicon glyphicon-user"></span>
+                  <a href="#" data-toggle="modal" data-target="#register"><span class="label label-default">点此注册</span></a>
+                </div>
+              </div>
+              <button class="btn btn-lg btn-primary btn-block" type="submit">登 陆</button>
+              {% if error_l %}
+                  <br />
+                <div class="alert alert-danger" role="alert">
+                  <p><strong>错误: </strong>{{ error_l }}</p>
+                </div>
+              {% endif %}
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal fade" id="register" tabindex="-1" role="dialog" aria-labelledby="registerModal" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">关闭</span></button>
+            <h4 class="modal-title" id="registerModal"><span class="glyphicon glyphicon-user"></span> 创建新用户</h4>
+          </div>
+          <div class="modal-body">
+            <form class="form-signin" action="{{ url_for('register') }}" method="POST" role="form" style="max-width:300px; margin: 0 auto;">
+              <h3 class="form-signin-heading"><span class="glyphicon glyphicon-hand-right"></span> Enter</h3>
+              <input type="text" name="username" class="form-control" placeholder="用户名" required autofocus>
+              <input type="password" name="password" class="form-control" placeholder="密码" required>
+              <br />
+              <button class="btn btn-lg btn-primary btn-block" type="submit">注 册</button>
+              {% if error_r %}
+                  <br />
+                <div class="alert alert-danger" role="alert">
+                  <p><strong>错误: </strong>{{ error_r }}</p>
+                </div>
+              {% endif %}
+              <br />
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <footer>
+      
+    </footer>
+  </body>
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='bootstrap.min.css') }}">
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='bootstrap-theme.min.css') }}">
+  <script type="text/javascript" src="{{ url_for('static', filename='jquery.min.js') }}"></script>
+  <script type="text/javascript" src="{{ url_for('static', filename='bootstrap.min.js') }}"></script>
+  <script>
+    $(document).ready(
+      function(){
+        document.getElementById('loading').innerHTML = "加载完成！";
+        setTimeout("$('#loading').slideToggle();", 1000);
+    });
+  </script>
+  <script>
+    {% if error_r %}
+      $('#register').modal('toggle');
+    {% endif %}
+  </script>
+</html>

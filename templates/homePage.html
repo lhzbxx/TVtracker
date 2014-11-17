@@ -1,0 +1,67 @@
+{% extends "dashboard.html" %}
+{% block body %}
+  <style type="text/css">
+    .yuan {
+      cursor:pointer; 
+    }
+  </style>
+  <div class="page-header">
+    <h1><b>主页</b> <small>>>> BirdView of Yourself.</small></h1>
+  </div>
+
+  {% if not tracking %}
+    <div class="jumbotron" background="black">
+      <h3 align="center">你没有添加任何剧集，快到上方的搜索栏添加吧！</h3>
+    </div>
+    {% else %}
+    {% for i in tracking %}
+        {% if i.end != 0 %}
+          <div class="panel panel-primary">
+        {% else %}
+          <div class="panel panel-warning">
+        {% endif %}
+          <div class="panel-heading">
+            <big><b>{{ i.tvname }}</b></big>
+            <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">关闭</span></button>
+          </div>
+          <div class="panel-body">
+            {% for j in mytv %}
+              {% for k in j %}
+              <a class="btn btn-default ep {{ i.tvname }} {{ k.type }}" href="{{ k.address }}" target="_blank">{{ k.episode }}</a>
+              {% endfor %}
+            {% endfor %}
+          </div>
+          <div class="panel-footer">
+            {% if i.epnum == 0 %}
+              <small>您还没有观看过本剧集！</small>
+            {% else %}
+              <small>您已追至{{ i.epnum }}</small>
+            {% endif %}
+            <div class="pull-right">
+              <span class="btn btn-xs yuan {{ i.tvname }} youku active" onclick="switchYuan('{{ i.tvname }}', 'youku')"><img src="{{ url_for('static', filename='youku.png') }}"></span>
+              <span class="btn btn-xs yuan {{ i.tvname }} vqq" onclick="switchYuan('{{ i.tvname }}', 'vqq')"><img src="{{ url_for('static', filename='vqq.png') }}"></span>
+              <span class="btn btn-xs yuan {{ i.tvname }} sohu" onclick="switchYuan('{{ i.tvname }}', 'sohu')"><img src="{{ url_for('static', filename='sohu.png') }}"></span>
+              <span class="btn btn-xs yuan {{ i.tvname }} tudou" onclick="switchYuan('{{ i.tvname }}', 'tudou')"><img src="{{ url_for('static', filename='tudou.png') }}"></span>
+              <span class="btn btn-xs yuan {{ i.tvname }} iqiyi" onclick="switchYuan('{{ i.tvname }}', 'iqiyi')"><img src="{{ url_for('static', filename='iqiyi.png') }}"></span>
+            </div>
+          </div>
+        </div>
+    {% endfor %}
+  {% endif %}
+
+  <script>
+    function switchYuan(tvname, yuan)
+    {
+        $('a.ep.'+tvname).hide();
+        $('a.ep.'+tvname+'.'+yuan).show();
+        $('span.yuan.'+tvname).removeClass('active');
+        $('span.yuan.'+tvname+'.'+yuan).addClass('active');
+    }
+  </script>
+
+  <script type="text/javascript">
+    $('li#menu_list_hp').addClass("active");
+    $('a.ep').hide();
+    $('a.ep.youku').fadeIn();
+  </script>
+{% endblock %}

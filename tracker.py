@@ -44,6 +44,7 @@ def matchTV_tudou(url, title):
         print i['href']
 
 def matchTV_acfun(url, title):
+    # ACFUN和土豆一个尿性，先放弃。
     content = urllib2.urlopen('http://static.acfun.mm111.net/dotnet/20130418/??script/jquery.2.1.1.min.js,script/prepare.0.0.5.min.js').read() + urllib2.urlopen('http://static.acfun.mm111.net/dotnet/20130418/??script/core.0.3.14.min.js,script/ready.0.3.23.min.js').read() + urllib2.urlopen('http://static.acfun.mm111.net/dotnet/20130418/script/album/album.min.js?date=1415866626945').read()
     ctxt = PyV8.JSContext()
     ctxt.enter()

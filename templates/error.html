@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>错误页面</title>
+    <script>
+      document.write("<div id='loading' style='z-index:1;padding:5px 0 5px 9px;background:#c44;left:0;top:0;width:90px;color:#fff;position:fixed;'>正在加载...</div>")
+      setTimeout("document.getElementById('loading').innerHTML = '加载失败，网络错误！';", 3000)      
+    </script>
+  </head>
+  <body>
+
+    <div class="jumbotron" background="black">
+      <div class="container">
+        <h1><b>404 - %>_<%</b></h1>
+        <span class="glyphicon glyphicon-share-alt"></span>
+        <h3>你查询的页面卖萌去了。</h3>
+        <h3>现在已经找不到了。</h3>
+        <h3>或者<a href="">刷新</a>一下看看~</h3>
+      </div>
+    </div>
+    <footer>
+      
+    </footer>
+  </body>
+  <!--
+  <link rel="stylesheet" href="http://cdn.bootcss.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="http://cdn.bootcss.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
+  <script src="http://cdn.bootcss.com/jquery/1.11.1/jquery.min.js"></script>
+  <script src="http://cdn.bootcss.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+  -->
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='bootstrap.min.css') }}">
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='bootstrap-theme.min.css') }}">
+  <script type="text/javascript" src="{{ url_for('static', filename='jquery.min.js') }}"></script>
+  <script type="text/javascript" src="{{ url_for('static', filename='bootstrap.min.js') }}"></script>
+  <script>
+    $(document).ready(
+      function(){
+        document.getElementById('loading').innerHTML = "加载完成！";
+        setTimeout("$('#loading').slideToggle();", 1000);
+    });
+  </script>
+</html>
