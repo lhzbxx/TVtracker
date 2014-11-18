@@ -16,7 +16,7 @@ def matchTV_vqq(url, title):
     j = 0
     for i in a_list:
         j = j + 1
-        cursor = conn.execute("SELECT id from tv where episode = ? and type = ?", (j, 'vqq',))
+        cursor = conn.execute("SELECT id from tv where tvname = ? and episode = ? and type = ?", (title, j, 'vqq',))
         if cursor.fetchall() == []:
             conn.execute("INSERT INTO tv (tvname, episode, address, type) VALUES (?, ?, ?, ?)", (title, j, 'http://v.qq.com' + i['href'], 'vqq'));
             conn.commit()
@@ -28,7 +28,7 @@ def matchTV_youku(url, title):
     j = 0
     for i in a_list:
         j = j + 1
-        cursor = conn.execute("SELECT id from tv where episode = ? and type = ?", (j, 'youku',))
+        cursor = conn.execute("SELECT id from tv where tvname = ? and episode = ? and type = ?", (title, j, 'youku',))
         if cursor.fetchall() == []:
             conn.execute("INSERT INTO tv (tvname, episode, address, type) VALUES (?, ?, ?, ?)", (title, j, i['href'], 'youku'));
             conn.commit()
@@ -69,6 +69,7 @@ def matchTV_acfun(url, title):
 def scan():
     tv = conn.execute('select name, link_youku, link_vqq, link_iqiyi from dream');
     for i in tv:
+        print i[0]
         if i[1]:
             matchTV_youku(i[1], i[0])
         if i[3]:

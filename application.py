@@ -93,7 +93,7 @@ def homePage():
                 L = query_db('select episode, epname, address, type from tv where tvname = ? order by episode ASC', [i['tvname']])
                 # 按照集数的升序列出。
                 mytv.append(L)
-        return render_template('homePage.html', user = user, tracking = tracking, mytv = mytv)
+        return render_template('homePage.html', user = user, zipped = zip(tracking, mytv), tracking = tracking)
     else:
         return redirect(url_for('welcome'))
 
@@ -138,6 +138,27 @@ def addTV():
         else:
             g.db.execute('insert into tracking (tvname, userid) values (?, ?)', [tvname, userid['id']])
             g.db.commit()
+    return redirect(url_for('welcome'))
+
+# 删除剧集。
+@app.route('/removeTV', methods=['GET'])
+def removeTV():
+    if session.get('logged_in'):
+        tvname = request.args.get('tv', '')
+        userid = query_db('select id from user where username = ?', [session['username']], one=True)
+        g.db.execute('delete from tracking where tvname = ? and userid = ?', [tvname, userid['id']])
+        g.db.commit()
+    return redirect(url_for('welcome'))
+
+# 更新追剧记录。
+@app.route('/updateTV', methods=['GET'])
+def updateTV():
+    if session.get('logged_in'):
+        tvname = request.args.get('tv', '')
+        episode = request.args.get('ep', 0)
+        userid = query_db('select id from user where username = ?', [session['username']], one=True)
+        g.db.execute('update tracking set epnum = ? where tvname = ? and userid = ?', [episode, tvname, userid['id']])
+        g.db.commit()
     return redirect(url_for('welcome'))
 
 @app.route('/test/<username>')

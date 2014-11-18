@@ -14,7 +14,7 @@
       <h3 align="center">你没有添加任何剧集，快到上方的搜索栏添加吧！</h3>
     </div>
     {% else %}
-    {% for i in tracking %}
+    {% for i, j in zipped %}
         {% if i.end != 0 %}
           <div class="panel panel-primary">
         {% else %}
@@ -22,20 +22,18 @@
         {% endif %}
           <div class="panel-heading">
             <big><b>{{ i.tvname }}</b></big>
-            <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">关闭</span></button>
+            <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true"><a href="{{ url_for('removeTV') }}?tv={{ i.tvname }}">&times;</a></span><span class="sr-only">关闭</span></button>
           </div>
           <div class="panel-body">
-            {% for j in mytv %}
-              {% for k in j %}
-              <a class="btn btn-default ep {{ i.tvname }} {{ k.type }}" href="{{ k.address }}" target="_blank">{{ k.episode }}</a>
-              {% endfor %}
+            {% for k in j %}
+              <a class="btn btn-default ep {{ i.tvname }} {{ k.type }}" href="{{ k.address }}" onclick="$.get('{{ url_for('updateTV') }}?tv={{ i.tvname }}&ep={{ k.episode }}')" target="_blank">{{ k.episode }}</a>
             {% endfor %}
           </div>
           <div class="panel-footer">
             {% if i.epnum == 0 %}
               <small>您还没有观看过本剧集！</small>
             {% else %}
-              <small>您已追至{{ i.epnum }}</small>
+              <small>您已追至第 {{ i.epnum }} 集。</small>
             {% endif %}
             <div class="pull-right">
               <span class="btn btn-xs yuan {{ i.tvname }} youku active" onclick="switchYuan('{{ i.tvname }}', 'youku')"><img src="{{ url_for('static', filename='youku.png') }}"></span>

@@ -95,7 +95,7 @@ create table tracking (
 );
 
 drop table if exists notification;
-# 记录表
+# 通知表
 create table notification (
     id integer primary key autoincrement,
     # 编号
