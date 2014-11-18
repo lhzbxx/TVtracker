@@ -13,12 +13,15 @@ def matchTV_vqq(url, title):
     content = urllib2.urlopen(url).read()
     bs = BeautifulSoup(content)
     a_list = bs.find('ul', id='mod_videolist').find_all('a')
+    imgsrc = bs.find('ul')
     j = 0
     for i in a_list:
         j = j + 1
         cursor = conn.execute("SELECT id from tv where tvname = ? and episode = ? and type = ?", (title, j, 'vqq',))
         if cursor.fetchall() == []:
             conn.execute("INSERT INTO tv (tvname, episode, address, type) VALUES (?, ?, ?, ?)", (title, j, 'http://v.qq.com' + i['href'], 'vqq'));
+            ticks = time.time()
+            conn.execute("INSERT INTO ping (name, episode, address, time) VALUES (?, ?, ?, ?)", (title, j, 'http://v.qq.com' + i['href'], int(ticks)));
             conn.commit()
 
 def matchTV_youku(url, title):
@@ -31,6 +34,8 @@ def matchTV_youku(url, title):
         cursor = conn.execute("SELECT id from tv where tvname = ? and episode = ? and type = ?", (title, j, 'youku',))
         if cursor.fetchall() == []:
             conn.execute("INSERT INTO tv (tvname, episode, address, type) VALUES (?, ?, ?, ?)", (title, j, i['href'], 'youku'));
+            ticks = time.time()
+            conn.execute("INSERT INTO ping (name, episode, address, time) VALUES (?, ?, ?, ?)", (title, j, i['href'], int(ticks)));
             conn.commit()
 
 def matchTV_iqiyi(url, title):

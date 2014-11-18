@@ -21,7 +21,7 @@ drop table if exists ping;
 create table ping (
     id integer primary key autoincrement,
     name text not null,
-    time text not null,
+    time integer not null,
     episode text not null,
     address text not null
 );
@@ -41,6 +41,7 @@ drop table if exists dream;
 create table dream (
     id integer primary key autoincrement,
     name text not null,
+    imgsrc text,
     link_youku text,
     link_iqiyi text,
     link_vqq text

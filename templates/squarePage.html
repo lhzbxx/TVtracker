@@ -4,6 +4,14 @@
     <h1><b>广场</b> <small>>>> Find fantasy latest.</small></h1>
   </div>
 
+  {% for i in tv %}
+    <div class="panel panel-default">
+    <div class="panel-body">
+        {{ i.name }}更新了第<a class="btn btn-default" href="{{ i.address }}" target="_blank"> {{ i.episode }} </a>集~
+    </div>
+    </div>
+  {% endfor %}
+
   <script type="text/javascript">
     $('li#menu_list_sp').addClass("active");
   </script>

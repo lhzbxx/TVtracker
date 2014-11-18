@@ -37,7 +37,7 @@ create table ping (
     # 编号
     name text not null,
     # 剧集名称
-    time text not null,
+    time integer not null,
     # 更新时间
     episode text not null,
     # 具体集数和名称
@@ -71,6 +71,8 @@ create table dream (
     # 编号
     name text not null,
     # 剧集名称
+    imgsrc text,
+    # 海报链接
     link_youku text,
     # 剧集的地址
     link_iqiyi text,

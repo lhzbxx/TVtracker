@@ -88,12 +88,15 @@ def homePage():
         # tracking是选取的剧集名称和集数。
         # mytv是一个list，插入的内容分别是单集、名称、观看地址和视频来源。
         mytv = []
+        idlist = []
         if tracking:
             for i in tracking:
                 L = query_db('select episode, epname, address, type from tv where tvname = ? order by episode ASC', [i['tvname']])
                 # 按照集数的升序列出。
+                tvid = query_db('select id from dream where name = ?', [i['tvname']], one=True)
                 mytv.append(L)
-        return render_template('homePage.html', user = user, zipped = zip(tracking, mytv), tracking = tracking)
+                idlist.append(tvid)
+        return render_template('homePage.html', user = user, zipped = zip(tracking, mytv, idlist), tracking = tracking)
     else:
         return redirect(url_for('welcome'))
 
@@ -102,7 +105,14 @@ def homePage():
 def squarePage():
     if session.get('logged_in'):
         user = query_db('select * from user where username = ?', [session['username']], one=True)
-        return render_template('squarePage.html', user = user)
+        ticks = int(time.time()) - 172800
+        print ticks
+        # 过滤超过两天之前的剧集更新记录
+        g.db.execute('delete from ping where time < ?', [ticks])
+        g.db.commit()
+        tv = query_db('select * from ping')
+        tv.reverse()
+        return render_template('squarePage.html', user = user, tv = tv)
     else:
         return redirect(url_for('welcome'))
 

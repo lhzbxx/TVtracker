@@ -14,7 +14,7 @@
       <h3 align="center">你没有添加任何剧集，快到上方的搜索栏添加吧！</h3>
     </div>
     {% else %}
-    {% for i, j in zipped %}
+    {% for i, j, p in zipped %}
         {% if i.end != 0 %}
           <div class="panel panel-primary">
         {% else %}
@@ -26,7 +26,7 @@
           </div>
           <div class="panel-body">
             {% for k in j %}
-              <a class="btn btn-default ep {{ i.tvname }} {{ k.type }}" href="{{ k.address }}" onclick="$.get('{{ url_for('updateTV') }}?tv={{ i.tvname }}&ep={{ k.episode }}')" target="_blank">{{ k.episode }}</a>
+              <a class="btn btn-default ep {{ p.id }} {{ k.type }}" href="{{ k.address }}" onclick="$.get('{{ url_for('updateTV') }}?tv={{ i.tvname }}&ep={{ k.episode }}')" target="_blank">{{ k.episode }}</a>
             {% endfor %}
           </div>
           <div class="panel-footer">
@@ -36,11 +36,11 @@
               <small>您已追至第 {{ i.epnum }} 集。</small>
             {% endif %}
             <div class="pull-right">
-              <span class="btn btn-xs yuan {{ i.tvname }} youku active" onclick="switchYuan('{{ i.tvname }}', 'youku')"><img src="{{ url_for('static', filename='youku.png') }}"></span>
-              <span class="btn btn-xs yuan {{ i.tvname }} vqq" onclick="switchYuan('{{ i.tvname }}', 'vqq')"><img src="{{ url_for('static', filename='vqq.png') }}"></span>
-              <span class="btn btn-xs yuan {{ i.tvname }} sohu" onclick="switchYuan('{{ i.tvname }}', 'sohu')"><img src="{{ url_for('static', filename='sohu.png') }}"></span>
-              <span class="btn btn-xs yuan {{ i.tvname }} tudou" onclick="switchYuan('{{ i.tvname }}', 'tudou')"><img src="{{ url_for('static', filename='tudou.png') }}"></span>
-              <span class="btn btn-xs yuan {{ i.tvname }} iqiyi" onclick="switchYuan('{{ i.tvname }}', 'iqiyi')"><img src="{{ url_for('static', filename='iqiyi.png') }}"></span>
+              <span class="btn btn-xs yuan {{ p.id }} youku active" onclick="switchYuan('{{ p.id }}', 'youku')"><img src="{{ url_for('static', filename='youku.png') }}"></span>
+              <span class="btn btn-xs yuan {{ p.id }} vqq" onclick="switchYuan('{{ p.id }}', 'vqq')"><img src="{{ url_for('static', filename='vqq.png') }}"></span>
+              <span class="btn btn-xs yuan {{ p.id }} sohu" onclick="switchYuan('{{ p.id }}', 'sohu')"><img src="{{ url_for('static', filename='sohu.png') }}"></span>
+              <span class="btn btn-xs yuan {{ p.id }} tudou" onclick="switchYuan('{{ p.id }}', 'tudou')"><img src="{{ url_for('static', filename='tudou.png') }}"></span>
+              <span class="btn btn-xs yuan {{ p.id }} iqiyi" onclick="switchYuan('{{ p.id }}', 'iqiyi')"><img src="{{ url_for('static', filename='iqiyi.png') }}"></span>
             </div>
           </div>
         </div>
