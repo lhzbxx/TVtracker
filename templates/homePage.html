@@ -9,7 +9,11 @@
     }
   </style>
   <div class="page-header">
-    <h1><b>主页</b> <small>>>> BirdView of Yourself.</small></h1>
+    {% if user.username != session.username %}
+      <h1><b>{{ user.username }}的主页</b> <small>>>> BirdView of Yourself.</small></h1>
+      {% else %}
+      <h1><b>我的主页</b> <small>>>> BirdView of Yourself.</small></h1>
+    {% endif %}
   </div>
 
   {% if not tracking %}

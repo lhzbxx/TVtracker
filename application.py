@@ -150,14 +150,12 @@ def talkPage():
     if session.get('logged_in'):
         user = query_db('select * from user where username = ?', [session['username']], one=True)
         tracking = query_db('select tvname, epnum from tracking where userid = ?', [user['id']])
-        talkList = []
         sql = 'select * from discuss where tvname = ?' + ' or tvname = ?' * (len(tracking)-1)
         talk = query_db(sql+' limit 30', [i['tvname'] for i in tracking])
         talk.reverse()
         for i in talk:
             i['time'] = delta_T(i['time'])
-        talkList.append(talk)
-        return render_template('talkPage.html', user = user, tracking = tracking, talkList = talkList)
+        return render_template('talkPage.html', user = user, tracking = tracking, talk = talk)
     else:
         return redirect(url_for('welcome'))
 
@@ -217,8 +215,8 @@ def postTalk():
         content = request.form['content']
         ticks = int(time.time())
         userid = query_db('select id from user where username = ?', [session['username']], one=True)
-        warning = query_db('select epnum from tracking where userid = ? and tvname = ?', [userid['id'], tvname], one=True)
-        g.db.execute('insert into discuss (tvname, name1, time, warning, content) values (?, ?, ?, ?, ?)', [tvname, session['username'], ticks, warning['epnum'], content])
+        warning = request.form['warning']
+        g.db.execute('insert into discuss (tvname, name1, time, warning, content) values (?, ?, ?, ?, ?)', [tvname, session['username'], ticks, warning, content])
         g.db.commit()
         return redirect(url_for('talkPage'))
     else:

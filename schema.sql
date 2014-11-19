@@ -34,7 +34,7 @@ create table discuss (
     name2 text,
     replyid integer,
     time integer not null,
-    warning integer not null,
+    warning integer not null default 0,
     level integer not null default 0,
     content text not null
 );

@@ -27,6 +27,11 @@
                       <textarea autofocus name="content" class="form-control" rows="3" placeholder="请随意输入任何你想要的一切！" style="resize: None"></textarea>
                     </div>
                     <div class="modal-footer">
+                        <div class="checkbox pull-left">
+                          <label>
+                            <input name="warning" value="1" type="checkbox">剧情相关
+                          </label>
+                        </div>
                         <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
                         <button type="submit" class="btn btn-primary">发布</button>
                     </div>
@@ -37,21 +42,24 @@
 
     <br />
 
-    {% for i in talkList %}
-        {% for j in i %}
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <big><b>{{ j.tvname }}</b></big>
-                </div>
-                <div class="panel-body">
-                    {{ j.content }}
-                </div>
-                <div class="panel-footer">
-                    <span>{{ j.name1 }}发布于{{ j.time }}</span>
-                    <a class="btn btn-xs btn-primary pull-right"> 评论 </a>
-                </div>
+    {% for i in talk %}
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <big><b>{{ i.tvname }}</b></big>
             </div>
-        {% endfor %}
+            <div class="panel-body">
+                {% if i.warning %}
+                    <a class="btn btn-warning" onclick="$(this).hide();$('.{{ i.id }}con').fadeIn();">注意！可能会有剧透，请再次点击进行查看！</a>
+                    <div class="{{ i.id }}con" style="display: none">{{ i.content }}</div>
+                    {% else %}
+                    <div>{{ i.content }}</div>
+                {% endif %}
+            </div>
+            <div class="panel-footer">
+                <span><a href='{{ url_for('viewUser') }}?user={{ i.name1 }}'>@{{ i.name1 }}</a>发布于{{ i.time }}</span>
+                <a class="btn btn-xs btn-primary pull-right"> 评论 </a>
+            </div>
+        </div>
     {% endfor %}
 
     <script type="text/javascript">

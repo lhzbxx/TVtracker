@@ -60,7 +60,7 @@ create table discuss (
     # 回复的对应编号
     time integer not null,
     # 发布时间
-    warning integer not null,
+    warning integer not null default 0,
     # 剧透提醒
     level integer not null default 0,
     # 主评论或者子评论
