@@ -151,12 +151,12 @@ def talkPage():
         user = query_db('select * from user where username = ?', [session['username']], one=True)
         tracking = query_db('select tvname, epnum from tracking where userid = ?', [user['id']])
         talkList = []
-        for i in tracking:
-            talk = query_db('select * from discuss where tvname = ?', [i['tvname']])
-            talk.reverse()
-            for j in talk:
-                j['time'] = delta_T(j['time'])
-            talkList.append(talk)
+        sql = 'select * from discuss where tvname = ?' + ' or tvname = ?' * (len(tracking)-1)
+        talk = query_db(sql+' limit 30', [i['tvname'] for i in tracking])
+        talk.reverse()
+        for i in talk:
+            i['time'] = delta_T(i['time'])
+        talkList.append(talk)
         return render_template('talkPage.html', user = user, tracking = tracking, talkList = talkList)
     else:
         return redirect(url_for('welcome'))
