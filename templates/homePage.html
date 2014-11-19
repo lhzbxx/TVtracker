@@ -4,6 +4,9 @@
     .yuan {
       cursor:pointer; 
     }
+    .poster {
+      max-width: 150px;
+    }
   </style>
   <div class="page-header">
     <h1><b>主页</b> <small>>>> BirdView of Yourself.</small></h1>
@@ -24,9 +27,15 @@
             <big><b>{{ i.tvname }}</b></big>
             <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true"><a href="{{ url_for('removeTV') }}?tv={{ i.tvname }}">&times;</a></span><span class="sr-only">关闭</span></button>
           </div>
-          <div class="panel-body">
+          <div class="panel-body btn-group">
+            <img class="poster" src="{{ p.imgsrc }}">
+            <br />
             {% for k in j %}
-              <a class="btn btn-default ep {{ p.id }} {{ k.type }}" href="{{ k.address }}" onclick="$.get('{{ url_for('updateTV') }}?tv={{ i.tvname }}&ep={{ k.episode }}')" target="_blank">{{ k.episode }}</a>
+              {% if k.episode > i.epnum %}
+              <a class="btn btn-success btn-lg ep {{ p.id }} {{ k.type }}" href="{{ k.address }}" onclick="$.get('{{ url_for('updateTV') }}?tv={{ i.tvname }}&ep={{ k.episode }}')" target="_blank">{{ k.episode }}</a>
+              {% else %}
+              <a class="btn btn-warning btn-lg ep {{ p.id }} {{ k.type }}" href="{{ k.address }}" onclick="$.get('{{ url_for('updateTV') }}?tv={{ i.tvname }}&ep={{ k.episode }}')" target="_blank">{{ k.episode }}</a>
+              {% endif %}
             {% endfor %}
           </div>
           <div class="panel-footer">

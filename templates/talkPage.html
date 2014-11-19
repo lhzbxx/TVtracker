@@ -1,10 +1,60 @@
 {% extends "dashboard.html" %}
 {% block body %}
-  <div class="page-header">
-    <h1><b>吐槽</b> <small>>>> Talk with others.</small></h1>
-  </div>
+    <div class="page-header">
+        <h1><b>吐槽</b> <small>>>> Talk with others.</small></h1>
+    </div>
 
-  <script type="text/javascript">
-    $('li#menu_list_tp').addClass("active");
-  </script>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='bootstrap-select.min.css') }}">
+    <script type="text/javascript" src="{{ url_for('static', filename='bootstrap-select.min.js') }}"></script>
+    
+    <form method="POST" action="{{ url_for('postTalk') }}">
+        <select name="tv" class="selectpicker">
+            {% for i in tracking %}
+                <option>{{ i.tvname }}</option>
+            {% endfor %}
+        </select>
+        <button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#talkModal">
+            我要吐槽！
+        </button>
+        <div class="modal fade" id="talkModal" tabindex="-1" role="dialog" aria-labelledby="talkModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                        <h4 class="modal-title" id="talkModalLabel">吐槽栏</h4>
+                    </div>
+                    <div class="modal-body">
+                      <textarea autofocus name="content" class="form-control" rows="3" placeholder="请随意输入任何你想要的一切！" style="resize: None"></textarea>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                        <button type="submit" class="btn btn-primary">发布</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <br />
+
+    {% for i in talkList %}
+        {% for j in i %}
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <big><b>{{ j.tvname }}</b></big>
+                </div>
+                <div class="panel-body">
+                    {{ j.content }}
+                </div>
+                <div class="panel-footer">
+                    <span>{{ j.name1 }}发布于{{ j.time }}</span>
+                </div>
+            </div>
+        {% endfor %}
+    {% endfor %}
+
+    <script type="text/javascript">
+        $('li#menu_list_tp').addClass("active");
+        $('.selectpicker').selectpicker();
+    </script>
 {% endblock %}

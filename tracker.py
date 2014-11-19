@@ -22,12 +22,18 @@ def matchTV_vqq(url, title):
             conn.execute("INSERT INTO tv (tvname, episode, address, type) VALUES (?, ?, ?, ?)", (title, j, 'http://v.qq.com' + i['href'], 'vqq'));
             ticks = time.time()
             conn.execute("INSERT INTO ping (name, episode, address, time) VALUES (?, ?, ?, ?)", (title, j, 'http://v.qq.com' + i['href'], int(ticks)));
-            conn.commit()
 
 def matchTV_youku(url, title):
-    content = urllib2.urlopen(url).read()
+    try:
+        content = urllib2.urlopen(url).read()
+    except Exception, e:
+        raise e
     bs = BeautifulSoup(content)
-    a_list = bs.find('div', id='episode').find_all('a')
+    tmp = bs.find('div', id='episode')
+    if tmp:
+        a_list = tmp.find_all('a')
+    else:
+        return
     j = 0
     for i in a_list:
         j = j + 1
@@ -36,7 +42,6 @@ def matchTV_youku(url, title):
             conn.execute("INSERT INTO tv (tvname, episode, address, type) VALUES (?, ?, ?, ?)", (title, j, i['href'], 'youku'));
             ticks = time.time()
             conn.execute("INSERT INTO ping (name, episode, address, time) VALUES (?, ?, ?, ?)", (title, j, i['href'], int(ticks)));
-            conn.commit()
 
 def matchTV_iqiyi(url, title):
     content = urllib2.urlopen(url).read()
@@ -81,6 +86,7 @@ def scan():
             matchTV_iqiyi(i[3], i[0])
         if i[2]:
             matchTV_vqq(i[2], i[0])
+    conn.commit()
 
 def init(inc):
     schedule.enter(inc, 0, init, (inc,))

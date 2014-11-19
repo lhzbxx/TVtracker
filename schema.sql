@@ -29,8 +29,10 @@ create table ping (
 drop table if exists discuss;
 create table discuss (
     id integer primary key autoincrement,
+    tvname text not null,
     name1 text not null,
     name2 text,
+    replyid integer,
     time integer not null,
     warning integer not null,
     level integer not null default 0,
@@ -42,6 +44,7 @@ create table dream (
     id integer primary key autoincrement,
     name text not null,
     imgsrc text,
+    enname text,
     link_youku text,
     link_iqiyi text,
     link_vqq text

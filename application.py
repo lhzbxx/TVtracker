@@ -93,12 +93,36 @@ def homePage():
             for i in tracking:
                 L = query_db('select episode, epname, address, type from tv where tvname = ? order by episode ASC', [i['tvname']])
                 # 按照集数的升序列出。
-                tvid = query_db('select id from dream where name = ?', [i['tvname']], one=True)
+                tvid = query_db('select id, imgsrc from dream where name = ?', [i['tvname']], one=True)
                 mytv.append(L)
                 idlist.append(tvid)
         return render_template('homePage.html', user = user, zipped = zip(tracking, mytv, idlist), tracking = tracking)
     else:
         return redirect(url_for('welcome'))
+
+# 浏览其他人的追剧。
+@app.route('/view', methods=['GET'])
+def viewUser():
+    username = request.args.get('user', '')
+    if username == '':
+        return redirect(url_for('welcome'))
+    user = query_db('select * from user where username = ?', [username], one=True)
+    if user:
+        tracking = query_db('select tvname, epnum from tracking where userid = ?', [user['id']])
+        # tracking是选取的剧集名称和集数。
+        # mytv是一个list，插入的内容分别是单集、名称、观看地址和视频来源。
+        mytv = []
+        idlist = []
+        if tracking:
+            for i in tracking:
+                L = query_db('select episode, epname, address, type from tv where tvname = ? order by episode ASC', [i['tvname']])
+                # 按照集数的升序列出。
+                tvid = query_db('select id, imgsrc from dream where name = ?', [i['tvname']], one=True)
+                mytv.append(L)
+                idlist.append(tvid)
+    else:
+        return redirect(url_for('welcome'))
+    return render_template('homePage.html', user = user, zipped = zip(tracking, mytv, idlist), tracking = tracking)
 
 # 广场页面。
 @app.route('/square')
@@ -110,9 +134,13 @@ def squarePage():
         # 过滤超过两天之前的剧集更新记录
         g.db.execute('delete from ping where time < ?', [ticks])
         g.db.commit()
-        tv = query_db('select * from ping')
+        tv = query_db('select * from ping limit 50')
         tv.reverse()
-        return render_template('squarePage.html', user = user, tv = tv)
+        imglist = []
+        for i in tv:
+            img = query_db('select imgsrc from dream where name = ?', [i['name']], one=True)
+            imglist.append(img['imgsrc'])
+        return render_template('squarePage.html', user = user, tv = zip(tv, imglist))
     else:
         return redirect(url_for('welcome'))
 
@@ -121,9 +149,40 @@ def squarePage():
 def talkPage():
     if session.get('logged_in'):
         user = query_db('select * from user where username = ?', [session['username']], one=True)
-        return render_template('talkPage.html', user = user)
+        tracking = query_db('select tvname, epnum from tracking where userid = ?', [user['id']])
+        talkList = []
+        for i in tracking:
+            talk = query_db('select * from discuss where tvname = ?', [i['tvname']])
+            talk.reverse()
+            for j in talk:
+                j['time'] = delta_T(j['time'])
+            talkList.append(talk)
+        return render_template('talkPage.html', user = user, tracking = tracking, talkList = talkList)
     else:
         return redirect(url_for('welcome'))
+
+# 时间差，输入时间戳，根据当前时间计算出时间差，并输出字符串。
+def delta_T(t):
+    d1 = time.gmtime()
+    d2 = time.gmtime(t)
+    s = ''
+    if d1.tm_year - d2.tm_year == 0:
+        if d1.tm_mon - d2.tm_mon == 0:
+            if d1.tm_mday - d2.tm_mday == 0:
+                if d1.tm_hour - d2.tm_hour == 0:
+                    if d1.tm_min - d2.tm_min == 0:
+                        s = str(d1.tm_sec-d2.tm_sec)+u'秒前'
+                    else:
+                        s = str(d1.tm_min-d2.tm_min)+u'分钟前'
+                else:
+                    s = str(d1.tm_hour-d2.tm_hour)+u'小时前'
+            else:
+                s = str(d1.tm_mday-d2.tm_mday)+u'天前'
+        else:
+            s = str(d1.tm_mon-d2.tm_mon)+u'月前'
+    else:
+        s = str(d1.tm_year-d2.tm_year)+u'年前'
+    return s
 
 # 搜索框。
 @app.route('/hint', methods=['GET'])
@@ -132,7 +191,7 @@ def hint():
     user = None
     str = '%' + request.args.get('str', '') + '%'
     if str:
-        tv = query_db('select name from dream where name like ? limit 5', [str])
+        tv = query_db('select name from dream where name like ? or enname like ? limit 5', [str, str])
         user = query_db('select username from user where username like ? limit 5', [str])
     result = {'tv': tv, 'user': user}
     return jsonify(result)
@@ -149,6 +208,21 @@ def addTV():
             g.db.execute('insert into tracking (tvname, userid) values (?, ?)', [tvname, userid['id']])
             g.db.commit()
     return redirect(url_for('welcome'))
+
+# 提交吐槽。
+@app.route('/postTalk', methods=['POST'])
+def postTalk():
+    if session.get('logged_in'):
+        tvname = request.form['tv']
+        content = request.form['content']
+        ticks = int(time.time())
+        userid = query_db('select id from user where username = ?', [session['username']], one=True)
+        warning = query_db('select epnum from tracking where userid = ? and tvname = ?', [userid['id'], tvname], one=True)
+        g.db.execute('insert into discuss (tvname, name1, time, warning, content) values (?, ?, ?, ?, ?)', [tvname, session['username'], ticks, warning['epnum'], content])
+        g.db.commit()
+        return redirect(url_for('talkPage'))
+    else:
+        return redirect(url_for('welcome'))
 
 # 删除剧集。
 @app.route('/removeTV', methods=['GET'])

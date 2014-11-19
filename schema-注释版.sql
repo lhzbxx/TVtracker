@@ -50,10 +50,14 @@ drop table if exists discuss;
 create table discuss (
     id integer primary key autoincrement,
     # 编号
+    tvname text not null,
+    # 讨论的剧集名称
     name1 text not null,
     # 发布人
     name2 text,
     # 回复人
+    replyid integer,
+    # 回复的对应编号
     time integer not null,
     # 发布时间
     warning integer not null,
@@ -71,6 +75,8 @@ create table dream (
     # 编号
     name text not null,
     # 剧集名称
+    enname text,
+    # 英语名称
     imgsrc text,
     # 海报链接
     link_youku text,
