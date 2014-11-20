@@ -27,21 +27,24 @@ def matchTV_youku(url, title):
     try:
         content = urllib2.urlopen(url).read()
     except Exception, e:
-        raise e
+        return
     bs = BeautifulSoup(content)
     tmp = bs.find('div', id='episode')
     if tmp:
         a_list = tmp.find_all('a')
     else:
         return
-    j = 0
+    j = len(a_list)
+    a_list.reverse()
     for i in a_list:
-        j = j + 1
         cursor = conn.execute("SELECT id from tv where tvname = ? and episode = ? and type = ?", (title, j, 'youku',))
         if cursor.fetchall() == []:
             conn.execute("INSERT INTO tv (tvname, episode, address, type) VALUES (?, ?, ?, ?)", (title, j, i['href'], 'youku'));
             ticks = time.time()
             conn.execute("INSERT INTO ping (name, episode, address, time) VALUES (?, ?, ?, ?)", (title, j, i['href'], int(ticks)));
+        else:
+            break
+        j = j - 1
 
 def matchTV_iqiyi(url, title):
     content = urllib2.urlopen(url).read()

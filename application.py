@@ -130,12 +130,10 @@ def squarePage():
     if session.get('logged_in'):
         user = query_db('select * from user where username = ?', [session['username']], one=True)
         ticks = int(time.time()) - 172800
-        print ticks
         # 过滤超过两天之前的剧集更新记录
         g.db.execute('delete from ping where time < ?', [ticks])
         g.db.commit()
-        tv = query_db('select * from ping limit 50')
-        tv.reverse()
+        tv = query_db('select * from ping order by id DESC limit 50')
         imglist = []
         for i in tv:
             img = query_db('select imgsrc from dream where name = ?', [i['name']], one=True)
@@ -150,12 +148,15 @@ def talkPage():
     if session.get('logged_in'):
         user = query_db('select * from user where username = ?', [session['username']], one=True)
         tracking = query_db('select tvname, epnum from tracking where userid = ?', [user['id']])
-        sql = 'select * from discuss where tvname = ?' + ' or tvname = ?' * (len(tracking)-1)
-        talk = query_db(sql+' limit 30', [i['tvname'] for i in tracking])
-        talk.reverse()
-        for i in talk:
-            i['time'] = delta_T(i['time'])
-        return render_template('talkPage.html', user = user, tracking = tracking, talk = talk)
+        if tracking:
+            sql = 'select * from discuss where tvname = ?' + ' or tvname = ?' * (len(tracking)-1)
+            talk = query_db(sql+' limit 30', [i['tvname'] for i in tracking])
+            talk.reverse()
+            for i in talk:
+                i['time'] = delta_T(i['time'])
+            return render_template('talkPage.html', user = user, tracking = tracking, talk = talk)
+        else:
+            return render_template('talkPage.html', user = user, tracking = False)
     else:
         return redirect(url_for('welcome'))
 

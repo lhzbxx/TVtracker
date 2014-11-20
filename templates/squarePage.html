@@ -22,6 +22,7 @@
     {% for i, j in tv %}
         <div class="box">
             <img class="poster" src="{{ j }}">
+            <br />
             《{{ i.name }}》<a class="btn btn-default btn-xs" href="{{ i.address }}" target="_blank">第{{ i.episode }}集</a>
         </div>
     {% endfor %}
