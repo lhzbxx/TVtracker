@@ -4,6 +4,7 @@
         <h1><b>吐槽</b> <small>>>> Talk with others.</small></h1>
     </div>
 
+
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='bootstrap-select.min.css') }}">
     <script type="text/javascript" src="{{ url_for('static', filename='bootstrap-select.min.js') }}"></script>
     
@@ -14,7 +15,7 @@
                 <option>{{ i.tvname }}</option>
             {% endfor %}
         </select>
-        <button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#talkModal">
+        <button type="button" class="btn btn-primary btn-outline btn-lg" data-toggle="modal" data-target="#talkModal">
             我要吐槽！
         </button>
         <div class="modal fade" id="talkModal" tabindex="-1" role="dialog" aria-labelledby="talkModalLabel" aria-hidden="true">
@@ -25,7 +26,7 @@
                         <h4 class="modal-title" id="talkModalLabel">吐槽栏</h4>
                     </div>
                     <div class="modal-body">
-                      <textarea autofocus name="content" class="form-control" rows="3" placeholder="请随意输入任何你想要的一切！" style="resize: None"></textarea>
+                        <textarea autofocus required name="content" class="form-control" rows="3" placeholder="请随意输入任何你想要的一切！" style="resize: None"></textarea>
                     </div>
                     <div class="modal-footer">
                         <div class="checkbox pull-left">
@@ -48,23 +49,82 @@
 
     {% for i in talk %}
         <div class="panel panel-default">
-            <div class="panel-heading">
-                <big><b>{{ i.tvname }}</b></big>
-            </div>
             <div class="panel-body">
                 {% if i.warning %}
-                    <a class="btn btn-warning" onclick="$(this).hide();$('.{{ i.id }}con').fadeIn();">注意！可能会有剧透，请再次点击进行查看！</a>
+                    <a class="btn btn-warning btn-outline" onclick="$(this).hide();$('.{{ i.id }}con').fadeIn();">注意！可能会有剧透，请再次点击进行查看！</a>
                     <div class="{{ i.id }}con" style="display: none">{{ i.content }}</div>
                     {% else %}
                     <div>{{ i.content }}</div>
                 {% endif %}
             </div>
             <div class="panel-footer">
-                <span><a href='{{ url_for('viewUser') }}?user={{ i.name1 }}'>@{{ i.name1 }}</a>发布于{{ i.time }}</span>
-                <a class="btn btn-xs btn-primary pull-right"> 评论 </a>
+                <a class="btn btn-xs btn-primary btn-outline" href='{{ url_for('viewUser') }}?user={{ i.name1 }}'><span class="glyphicon glyphicon-user"></span> {{ i.name1 }}</a>&nbsp;&nbsp;
+                <span class="btn btn-xs btn-success btn-outline"><span class="glyphicon glyphicon-calendar"></span> {{ i.time }}</span>&nbsp;&nbsp;
+                <span class="btn btn-xs btn-danger btn-outline"><span class="glyphicon glyphicon-eye-open"></span> {{ i.tvname }}</span>
+                <div class="pull-right">
+                    <a class="btn btn-xs btn-primary btn-outline"><span class="glyphicon glyphicon-thumbs-up"></span> (0)</a> &nbsp;&nbsp;
+                    <a class="btn btn-xs btn-primary btn-outline"><span class="glyphicon glyphicon-comment"></span> 评论</a>
+                </div>
+            </div>
+        </div>
+        <div class="well col-md-offset-1">
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    {% if i.warning %}
+                        <a class="btn btn-warning btn-outline" onclick="$(this).hide();$('.{{ i.id }}con').fadeIn();">注意！可能会有剧透，请再次点击进行查看！</a>
+                        <div class="{{ i.id }}con" style="display: none">{{ i.content }}</div>
+                        {% else %}
+                        <div>{{ i.content }}</div>
+                    {% endif %}
+                </div>
+                <div class="panel-footer">
+                    <a class="btn btn-xs btn-primary btn-outline" href='{{ url_for('viewUser') }}?user={{ i.name1 }}'><span class="glyphicon glyphicon-user"></span> {{ i.name1 }}</a>&nbsp;&nbsp;
+                    <span class="btn btn-xs btn-success btn-outline"><span class="glyphicon glyphicon-calendar"></span> {{ i.time }}</span>
+                    <div class="pull-right">
+                        <a class="btn btn-xs btn-primary btn-outline"><span class="glyphicon glyphicon-thumbs-up"></span> (0)</a> &nbsp;&nbsp;
+                        <a class="btn btn-xs btn-primary btn-outline"><span class="glyphicon glyphicon-comment"></span> 评论</a>
+                    </div>
+                </div>
             </div>
         </div>
     {% endfor %}
+
+    <style type="text/css">
+        .btn-outline {
+            background-color: transparent;
+            background-image: none;
+            color: inherit;
+            transition: all .5s;
+        }
+        .btn-primary.btn-outline {
+            color: #428bca;
+        }
+        .btn-success.btn-outline {
+            color: #5cb85c;
+        }
+        .btn-info.btn-outline {
+            color: #5bc0de;
+        }
+        .btn-warning.btn-outline {
+            color: #f0ad4e;
+        }
+        .btn-danger.btn-outline {
+            color: #d9534f;
+        }
+        .btn-primary.btn-outline:hover,
+        .btn-success.btn-outline:hover,
+        .btn-info.btn-outline:hover,
+        .btn-warning.btn-outline:hover,
+        .btn-danger.btn-outline:hover {
+            color: #fff;
+        }
+        .well {
+            margin-top: 0;
+        }
+        .pnreply {
+            margin-bottom: 0;
+        }
+    </style>
 
     <script type="text/javascript">
         $('li#menu_list_tp').addClass("active");

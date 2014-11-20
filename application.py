@@ -216,8 +216,10 @@ def postTalk():
         content = request.form['content']
         ticks = int(time.time())
         userid = query_db('select id from user where username = ?', [session['username']], one=True)
-        warning = request.form['warning']
-        g.db.execute('insert into discuss (tvname, name1, time, warning, content) values (?, ?, ?, ?, ?)', [tvname, session['username'], ticks, warning, content])
+        if request.form.get('warning'):
+            g.db.execute('insert into discuss (tvname, name1, time, warning, content) values (?, ?, ?, ?, ?)', [tvname, session['username'], ticks, 1, content])
+        else:
+            g.db.execute('insert into discuss (tvname, name1, time, content) values (?, ?, ?, ?)', [tvname, session['username'], ticks, content])
         g.db.commit()
         return redirect(url_for('talkPage'))
     else:
