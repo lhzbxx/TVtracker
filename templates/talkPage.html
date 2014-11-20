@@ -15,7 +15,7 @@
                 <option>{{ i.tvname }}</option>
             {% endfor %}
         </select>
-        <button type="button" class="btn btn-primary btn-outline btn-lg" data-toggle="modal" data-target="#talkModal">
+        <button type="button" class="btn btn-primary btn-outline btn-lg" data-toggle="modal" data-target="#talkModal" onclick="$('#talkText').focus();$('#talkText').select();">
             我要吐槽！
         </button>
         <div class="modal fade" id="talkModal" tabindex="-1" role="dialog" aria-labelledby="talkModalLabel" aria-hidden="true">
@@ -26,7 +26,7 @@
                         <h4 class="modal-title" id="talkModalLabel">吐槽栏</h4>
                     </div>
                     <div class="modal-body">
-                        <textarea autofocus required name="content" class="form-control" rows="3" placeholder="请随意输入任何你想要的一切！" style="resize: None"></textarea>
+                        <textarea id="talkText" autofocus required name="content" class="form-control" rows="3" placeholder="请随意输入任何你想要的一切！" style="resize: None"></textarea>
                     </div>
                     <div class="modal-footer">
                         <div class="checkbox pull-left">
@@ -47,8 +47,12 @@
 
     <br />
 
-    {% for i in talk %}
+    {% for i, j in talk %}
+        {% if j == 0 %}
         <div class="panel panel-default">
+        {% else %}
+        <div class="panel panel-default">
+        {% endif %}
             <div class="panel-body">
                 {% if i.warning %}
                     <a class="btn btn-warning btn-outline" onclick="$(this).hide();$('.{{ i.id }}con').fadeIn();">注意！可能会有剧透，请再次点击进行查看！</a>
@@ -62,32 +66,69 @@
                 <span class="btn btn-xs btn-success btn-outline"><span class="glyphicon glyphicon-calendar"></span> {{ i.time }}</span>&nbsp;&nbsp;
                 <span class="btn btn-xs btn-danger btn-outline"><span class="glyphicon glyphicon-eye-open"></span> {{ i.tvname }}</span>
                 <div class="pull-right">
+                    {% if j != 0 %}
+                        <span class="btn btn-xs btn-primary btn-outline {{ i.id }}showBtn" onclick="$('.{{ i.id }}replySquare').fadeToggle();$('.{{ i.id }}hideBtn').show();$('.{{ i.id }}showBtn').hide();"><span class="glyphicon glyphicon-chevron-down"></span> 展开</span><span class="{{ i.id }}showBtn"> &nbsp;&nbsp;</span>
+                        <span class="btn btn-xs btn-primary btn-outline {{ i.id }}hideBtn" onclick="$('.{{ i.id }}replySquare').fadeToggle();$('.{{ i.id }}showBtn').show();$('.{{ i.id }}hideBtn').hide();" style="display: none;"><span class="glyphicon glyphicon-chevron-up"></span> 收起</span><span class="{{ i.id }}hideBtn" style="display: none;"> &nbsp;&nbsp;</span>
+                    {% endif %}
                     <a class="btn btn-xs btn-primary btn-outline"><span class="glyphicon glyphicon-thumbs-up"></span> (0)</a> &nbsp;&nbsp;
-                    <a class="btn btn-xs btn-primary btn-outline"><span class="glyphicon glyphicon-comment"></span> 评论</a>
+                    <button class="btn btn-xs btn-primary btn-outline" data-toggle="modal" data-target="#replyModal" onclick="$('#replyName').val('{{ i.name1 }}');$('#tvName').val('{{ i.tvname }}');$('#replyId').val('{{ i.id }}');$('#replyText').focus();"><span class="glyphicon glyphicon-comment"></span> 评论</button>
                 </div>
             </div>
         </div>
-        <div class="well col-md-offset-1">
-            <div class="panel panel-default">
+        {% if j != 0%}
+        <div class="well col-md-offset-1 {{ i.id }}replySquare" style="display: none;">
+        {% for k in j %}
+            <div class="panel panel-default replyPanel">
                 <div class="panel-body">
-                    {% if i.warning %}
-                        <a class="btn btn-warning btn-outline" onclick="$(this).hide();$('.{{ i.id }}con').fadeIn();">注意！可能会有剧透，请再次点击进行查看！</a>
-                        <div class="{{ i.id }}con" style="display: none">{{ i.content }}</div>
+                    {% if k.warning %}
+                        <a class="btn btn-warning btn-outline" onclick="$(this).hide();$('.{{ k.id }}con').fadeIn();">注意！可能会有剧透，请再次点击进行查看！</a>
+                        <div class="{{ k.id }}con" style="display: none"><a class="btn btn-xs btn-primary btn-outline" href='{{ url_for('viewUser') }}?user={{ k.name1 }}'><span class="glyphicon glyphicon-user"></span> {{ k.name1 }}</a> 回复 <a class="btn btn-xs btn-primary btn-outline" href='{{ url_for('viewUser') }}?user={{ k.name2 }}'><span class="glyphicon glyphicon-user"></span> {{ k.name2 }}</a>：{{ k.content }}</div>
                         {% else %}
-                        <div>{{ i.content }}</div>
+                        <div><a class="btn btn-xs btn-primary btn-outline" href='{{ url_for('viewUser') }}?user={{ k.name1 }}'><span class="glyphicon glyphicon-user"></span> {{ k.name1 }}</a> 回复 <a class="btn btn-xs btn-primary btn-outline" href='{{ url_for('viewUser') }}?user={{ k.name2 }}'><span class="glyphicon glyphicon-user"></span> {{ k.name2 }}</a>：{{ k.content }}</div>
                     {% endif %}
                 </div>
                 <div class="panel-footer">
-                    <a class="btn btn-xs btn-primary btn-outline" href='{{ url_for('viewUser') }}?user={{ i.name1 }}'><span class="glyphicon glyphicon-user"></span> {{ i.name1 }}</a>&nbsp;&nbsp;
-                    <span class="btn btn-xs btn-success btn-outline"><span class="glyphicon glyphicon-calendar"></span> {{ i.time }}</span>
+                    <a class="btn btn-xs btn-primary btn-outline" href='{{ url_for('viewUser') }}?user={{ k.name1 }}'><span class="glyphicon glyphicon-user"></span> {{ k.name1 }}</a>&nbsp;&nbsp;
+                    <span class="btn btn-xs btn-success btn-outline"><span class="glyphicon glyphicon-calendar"></span> {{ k.time }}</span>
                     <div class="pull-right">
                         <a class="btn btn-xs btn-primary btn-outline"><span class="glyphicon glyphicon-thumbs-up"></span> (0)</a> &nbsp;&nbsp;
-                        <a class="btn btn-xs btn-primary btn-outline"><span class="glyphicon glyphicon-comment"></span> 评论</a>
+                        <button class="btn btn-xs btn-primary btn-outline" data-toggle="modal" data-target="#replyModal" onclick="$('#replyName').val('{{ k.name1 }}');$('#tvName').val('{{ k.tvname }}');$('#replyId').val('{{ k.replyid }}');$('#replyText').focus();"><span class="glyphicon glyphicon-comment"></span> 评论</button>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+        </div>
+        {% endif %}
+        <br />
+    {% endfor %}
+
+    <form method="POST" action="{{ url_for('postReply') }}">
+        <div class="modal fade" id="replyModal" tabindex="-1" role="dialog" aria-labelledby="replyModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                        <h4 class="modal-title" id="replyModalLabel">回复栏</h4>
+                        <input id="replyName" name="replyName" value="" style="display: none">
+                        <input id="tvName" name="tvName" value="" style="display: none">
+                        <input id="replyId" name="replyId" value="" style="display: none">
+                    </div>
+                    <div class="modal-body">
+                        <textarea id="replyText" autofocus required name="content" class="form-control" rows="3" placeholder="请随意输入任何你想要的一切！" style="resize: None"></textarea>
+                    </div>
+                    <div class="modal-footer">
+                        <div class="checkbox pull-left">
+                          <label>
+                            <input name="warning" value="1" type="checkbox">剧情相关
+                          </label>
+                        </div>
+                        <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                        <button type="submit" class="btn btn-primary">发布</button>
                     </div>
                 </div>
             </div>
         </div>
-    {% endfor %}
+    </form>
 
     <style type="text/css">
         .btn-outline {
@@ -120,9 +161,13 @@
         }
         .well {
             margin-top: 0;
-        }
-        .pnreply {
             margin-bottom: 0;
+        }
+        .panel {
+            margin-bottom: 0;
+        }
+        .replyPanel {
+            margin-bottom: 5px;
         }
     </style>
 

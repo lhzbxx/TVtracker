@@ -149,12 +149,20 @@ def talkPage():
         user = query_db('select * from user where username = ?', [session['username']], one=True)
         tracking = query_db('select tvname, epnum from tracking where userid = ?', [user['id']])
         if tracking:
-            sql = 'select * from discuss where tvname = ?' + ' or tvname = ?' * (len(tracking)-1)
+            sql = 'select * from discuss where name2 is null and tvname = ?' + ' or tvname = ?' * (len(tracking)-1)
             talk = query_db(sql+' limit 30', [i['tvname'] for i in tracking])
             talk.reverse()
+            re = []
             for i in talk:
                 i['time'] = delta_T(i['time'])
-            return render_template('talkPage.html', user = user, tracking = tracking, talk = talk)
+                replys = query_db('select * from discuss where replyid = ?', [i['id']])
+                if replys:
+                    for reply in replys:
+                        reply['time'] = delta_T(reply['time'])
+                    re.append(replys)
+                else:
+                    re.append(0)
+            return render_template('talkPage.html', user = user, tracking = tracking, talk = zip(talk, re))
         else:
             return render_template('talkPage.html', user = user, tracking = False)
     else:
@@ -220,6 +228,25 @@ def postTalk():
             g.db.execute('insert into discuss (tvname, name1, time, warning, content) values (?, ?, ?, ?, ?)', [tvname, session['username'], ticks, 1, content])
         else:
             g.db.execute('insert into discuss (tvname, name1, time, content) values (?, ?, ?, ?)', [tvname, session['username'], ticks, content])
+        g.db.commit()
+        return redirect(url_for('talkPage'))
+    else:
+        return redirect(url_for('welcome'))
+
+# 提交评论。
+@app.route('/postReply', methods=['POST'])
+def postReply():
+    if session.get('logged_in'):
+        tvname = request.form['tvName']
+        content = request.form['content']
+        replyid = request.form['replyId']
+        ticks = int(time.time())
+        replyName = request.form['replyName']
+        userid = query_db('select id from user where username = ?', [session['username']], one=True)
+        if request.form.get('warning'):
+            g.db.execute('insert into discuss (tvname, name1, name2, time, warning, content, replyid) values (?, ?, ?, ?, ?, ?, ?)', [tvname, session['username'], replyName, ticks, 1, content, replyid])
+        else:
+            g.db.execute('insert into discuss (tvname, name1, name2, time, content, replyid) values (?, ?, ?, ?, ?, ?)', [tvname, session['username'], replyName, ticks, content, replyid])
         g.db.commit()
         return redirect(url_for('talkPage'))
     else:
