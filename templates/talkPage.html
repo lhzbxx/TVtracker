@@ -56,9 +56,9 @@
             <div class="panel-body">
                 {% if i.warning %}
                     <a class="btn btn-warning btn-outline" onclick="$(this).hide();$('.{{ i.id }}con').fadeIn();">注意！可能会有剧透，请再次点击进行查看！</a>
-                    <div class="{{ i.id }}con" style="display: none">{{ i.content }}</div>
+                    <div class="{{ i.id }}con" style="display: none"><a class="btn btn-xs btn-primary btn-outline" href='{{ url_for('viewUser') }}?user={{ i.name1 }}'><span class="glyphicon glyphicon-user"></span> {{ i.name1 }}</a>：{{ i.content }}</div>
                     {% else %}
-                    <div>{{ i.content }}</div>
+                    <div><a class="btn btn-xs btn-primary btn-outline" href='{{ url_for('viewUser') }}?user={{ i.name1 }}'><span class="glyphicon glyphicon-user"></span> {{ i.name1 }}</a>：{{ i.content }}</div>
                 {% endif %}
             </div>
             <div class="panel-footer">
