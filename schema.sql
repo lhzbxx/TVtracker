@@ -67,3 +67,12 @@ create table notification (
     content integer not null default 0,
     link integer not null default 0
 );
+
+drop table if exists chat;
+create table chat (
+    id integer primary key autoincrement,
+    username1 text not null,
+    username2 integer not null,
+    content text not null,
+    time integer not null
+);

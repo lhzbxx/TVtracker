@@ -116,3 +116,18 @@ create table notification (
     link integer not null default 0
     # 从通知转向的链接
 );
+
+drop table if exists chat;
+# 聊天表
+create table chat (
+    id integer primary key autoincrement,
+    # 编号
+    username1 text not null,
+    # 用户名
+    username2 integer not null,
+    # 用户名
+    content text not null,
+    # 内容
+    time integer not null
+    # 时间
+);

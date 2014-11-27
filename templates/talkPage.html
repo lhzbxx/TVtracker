@@ -4,7 +4,6 @@
         <h1><b>吐槽</b> <small>>>> Talk with others.</small></h1>
     </div>
 
-
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='bootstrap-select.min.css') }}">
     <script type="text/javascript" src="{{ url_for('static', filename='bootstrap-select.min.js') }}"></script>
     
@@ -42,7 +41,9 @@
         </div>
     </form>
     {% else %}
-        <p>你没有任何追剧记录，没啥可吐槽的呦！</p>
+    <div class="jumbotron" background="black">
+      <h3 align="center">你没有任何追剧记录，没啥可吐槽的呦！</h3>
+    </div>
     {% endif %}
 
     <br />

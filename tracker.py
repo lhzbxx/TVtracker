@@ -92,7 +92,7 @@ def scan():
     conn.commit()
 
 def init(inc):
-    schedule.enter(inc, 0, init, (inc,))
+    # schedule.enter(inc, 0, init, (inc,))
     scan()
 
 schedule = sched.scheduler(time.time, time.sleep)

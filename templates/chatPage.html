@@ -1,0 +1,142 @@
+{% extends "dashboard.html" %}
+{% block body %}
+    <div class="page-header">
+        <h1><b>随意聊</b> <small>>>> Chat whatever you like.</small></h1>
+    </div>
+
+    <style type="text/css">
+        .btn-outline {
+            background-color: transparent;
+            background-image: none;
+            color: inherit;
+            transition: all .5s;
+        }
+        .btn-primary.btn-outline {
+            color: #428bca;
+        }
+        .btn-success.btn-outline {
+            color: #5cb85c;
+        }
+        .btn-info.btn-outline {
+            color: #5bc0de;
+        }
+        .btn-warning.btn-outline {
+            color: #f0ad4e;
+        }
+        .btn-danger.btn-outline {
+            color: #d9534f;
+        }
+        .btn-primary.btn-outline:hover,
+        .btn-success.btn-outline:hover,
+        .btn-info.btn-outline:hover,
+        .btn-warning.btn-outline:hover,
+        .btn-danger.btn-outline:hover {
+            color: #fff;
+        }
+        .well {
+            margin-top: 0;
+            margin-bottom: 0;
+        }
+        .panel {
+            margin-bottom: 0;
+        }
+        .replyPanel {
+            margin-bottom: 5px;
+        }
+        .ChatBox {
+            width: 100%; 
+            height: 300px; 
+            margin-left: auto; 
+            margin-right: auto; 
+            padding: 3px; 
+            outline: 0; 
+            border: 1px solid #a0b3d6; 
+            word-wrap: break-word;
+            overflow-x: hidden;
+            overflow-y: auto;
+            _overflow-y: visible;
+        }
+        blockquote {
+            font-size: 15px;
+            height: 20px;
+            padding-bottom: 0;
+            padding-top: 0;
+        }
+    </style>
+
+    <big>在线人数：<a class="btn btn-outline btn-success btn-sm"><big id="peopleNumber">读取中...</big></a></big><br /><br />
+    <div id="chatText" class="ChatBox">
+        <div id="divider"></div>
+        <big>欢迎进入聊天室，按Enter键可以快速发言。</big><br/><br />
+        {% for i in chatList %}
+            {% if i.username1 == session.username %}
+            <a class="btn btn-outline btn-primary btn-xs">你</a>
+            {% else %}
+            <a class="btn btn-outline btn-primary btn-xs" onclick="$('#selectBtn').text($(this).text()); $('#username2').val($(this).text()); $('#content').focus();">{{ i.username1 }}</a>
+            {% endif %}
+             <a class="btn btn-outline btn-warning btn-xs">{{ i.time }}</a> 对 
+            {% if i.username2 == session.username %}
+            <a class="btn btn-outline btn-danger btn-xs">你</a>
+            {% else %}
+            <a class="btn btn-outline btn-danger btn-xs" onclick="$('#selectBtn').text($(this).text()); $('#username2').val($(this).text()); $('#content').focus();">{{ i.username2 }}</a>
+            {% endif %}
+             说：
+            <blockquote>{{ i.content }}</blockquote>
+        {% endfor %}
+    </div>
+
+    <br />
+
+    <div class="col-md-12 input-group">
+        <div class="input-group-btn">
+            <button type="button" id="selectBtn" class="btn btn-outline btn-primary dropdown-toggle" data-toggle="dropdown">所有人</button>
+                <ul class="dropdown-menu dropdown-menu-right" role="menu">
+                    <li><a href="#" onclick="$('#selectBtn').text('所有人'); $('#username2').val('所有人');">所有人</a></li>
+                    {% for i in tracking %}
+                    <li><a href="#" onclick="$('#selectBtn').text($(this).text()); $('#username2').val($(this).text());">{{ i.tvname }}</a></li>
+                    {% endfor %}
+                </ul>
+            </div>
+        <input type="text" id="content" name="content" required autofocus onkeydown="enterDown(event)" class="form-control" AUTOCOMPLETE="OFF">
+        <input type="text" id="username2" name="username2" value="所有人" style="display: none">
+        <span class="input-group-btn">
+            <button class="btn btn-outline btn-success" onclick="postChat()">回复</button>
+        </span>
+    </div>
+
+    <script type="text/javascript">
+        $('li#menu_list_cp').addClass("active");
+        function enterDown(e) {
+            if (e.keyCode == 13 || e.keyCode == 108) {
+                postChat();
+            }
+        }
+        function postChat () {
+            if ($("#content").val() == "") 
+                return;
+            $.ajax({
+                url: '{{ url_for('addChat') }}',
+                async: false,
+                type: "post",  //提交方式
+                dataType: "html",  //服务器返回类型
+                data: { username2: $("#username2").val(), content: $("#content").val() },  //传参写法
+                success: function (msg) {
+                    d = new Date();
+                    $('#divider').after('<a class="btn btn-outline btn-primary btn-xs">你</a> <a class="btn btn-outline btn-warning btn-xs">' + d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate()+' '+d.getHours()+':'+d.getMinutes()+':'+d.getSeconds() + '</a> 对 <a class="btn btn-outline btn-danger btn-xs" onclick="$("#selectBtn").text($(this).text()); $("#username2").val($(this).text()); $("#content").focus();">'+$("#selectBtn").text()+'</a> 说：<blockquote>'+$("#content").val()+'</blockquote>');
+                    $('#content').val("");
+                }
+            });
+        }
+        $.get("{{ url_for('refreshNumber') }}", function(result) {
+            $('#peopleNumber').text(result['num']);
+        });
+        $(function(){
+            setInterval(function() {
+            $.get("{{ url_for('refreshNumber') }}", function(result) {
+                    $('#peopleNumber').text(result['num']);
+                });
+            }, 3000); 
+            // 3秒等待
+        }); 
+        </script>
+{% endblock %}

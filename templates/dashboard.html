@@ -47,6 +47,9 @@
           <li id="menu_list_tp">
             <a href="{{ url_for('talkPage') }}"><span class="glyphicon glyphicon-list-alt"></span> 吐槽</a>
           </li>
+          <li id="menu_list_cp">
+            <a href="{{ url_for('chatPage') }}"><span class="glyphicon glyphicon-list-alt"></span> 随意聊</a>
+          </li>
         </ul>
         <ul class="nav navbar-nav navbar-right">
           <li class="dropdown">
@@ -60,7 +63,7 @@
             </form>
           </li>
           <li class="dropdown">
-            <a href="#" onclick="$('#newMsg').popover('destroy');" class="dropdown-toggle" data-toggle="dropdown"><span  data-toggle="popover" data-placement="bottom" data-trigger="manual" title="新消息！" data-content="你收到了新消息~" id="newMsg"> 个人账号：{{ session['username'] }}</span><span class="caret"></span></a>
+            <a href="#" onclick="$('#newMsg').popover('destroy');" class="dropdown-toggle" data-toggle="dropdown"><span data-toggle="popover" data-placement="bottom" data-trigger="manual" title="新消息！" data-content="你收到了新消息~" id="newMsg"> 个人账号：{{ session['username'] }}</span><span class="caret"></span></a>
             <ul class="dropdown-menu" role="menu" aria-labelledby="newMsg">
               <li data-toggle="modal" data-target="#notifi"><a href="#"><span class="glyphicon glyphicon-bell"></span> 个人通知 <span class="badge" id="notifiBadge">{{ user['noticenum'] }}</span></a></li>
               <li class="divider"></li>
@@ -122,18 +125,18 @@
         document.getElementById('loading').innerHTML = "加载完成！";
         setTimeout("$('#loading').slideToggle();", 1000);
     });
-    $(function(){
-      var num = {{ user.noticenum }};
-      setInterval(function() {
-        $.get("{{ url_for('refresh') }}", function(result) {
-          if (result["num"] > num) {
-            num = result["num"];
-            $('#newMsg').popover('show');
-            $('#notifiBadge').html(num);
-          };
-        });
-      }, 300000); 
-      // 300秒等待
-    }); 
+    // $(function(){
+    //   var num = {{ user.noticenum }};
+    //   setInterval(function() {
+    //     $.get("{{ url_for('refresh') }}", function(result) {
+    //       if (result["num"] > num) {
+    //         num = result["num"];
+    //         $('#newMsg').popover('show');
+    //         $('#notifiBadge').html(num);
+    //       };
+    //     });
+    //   }, 30000000); 
+    //   // 300秒等待
+    // }); 
   </script>
 </html>

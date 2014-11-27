@@ -5,6 +5,10 @@ import os
 from flask import *
 import time as time
 from random import randint
+from redis import Redis
+
+# 引入Redis数据库。
+r_db = Redis()
 
 app = Flask(__name__)
 
@@ -142,6 +146,49 @@ def squarePage():
     else:
         return redirect(url_for('welcome'))
 
+# 聊天页面。
+@app.route('/chat')
+def chatPage():
+    if session.get('logged_in'):
+        user = query_db('select * from user where username = ?', [session['username']], one=True)
+        tracking = query_db('select tvname, epnum from tracking where userid = ?', [user['id']])
+        sql = 'select * from chat where username2 = "所有人"' + ' or username2 = ?' * (len(tracking)+1) + ' or username1 = ?'
+        tmp = [i['tvname'] for i in tracking]
+        tmp.append(session['username'])
+        tmp.append(session['username'])
+        chatList = query_db(sql, tmp)
+        chatList.reverse()
+        for i in chatList:
+            i['time'] = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(i['time']))
+        return render_template('chatPage.html', chatList = chatList, tracking = tracking, user = user)
+    else:
+        return redirect(url_for('welcome'))
+
+# 聊天发言。
+@app.route('/addChat', methods=['POST'])
+def addChat():
+    if session.get('logged_in'):
+        user = query_db('select * from user where username = ?', [session['username']], one=True)
+        g.db.execute('insert into chat (username1, username2, content, time) values (?, ?, ?, ?)', [session['username'], request.form['username2'], request.form['content'], int(time.time())])
+        g.db.commit()
+        return "OK"
+        # return redirect(url_for('chatPage'))
+    else:
+        return redirect(url_for('welcome'))
+
+# 刷新聊天人数。
+@app.route('/refreshNumber', methods=['GET'])
+def refreshNumber():
+    if session.get('logged_in'):
+        if not r_db.exists('chatingUser'):
+            r_db.sadd('chatingUser', session['username'])
+            r_db.expire('chatingUser', 10)
+        else:
+            r_db.sadd('chatingUser', session['username'])
+        result = {'num': r_db.scard('chatingUser')}
+        return jsonify(result)
+    return redirect(url_for('welcome'))
+
 # 吐槽页面。
 @app.route('/talk')
 def talkPage():
@@ -149,8 +196,8 @@ def talkPage():
         user = query_db('select * from user where username = ?', [session['username']], one=True)
         tracking = query_db('select tvname, epnum from tracking where userid = ?', [user['id']])
         if tracking:
-            sql = 'select * from discuss where name2 is null and tvname = ?' + ' or tvname = ?' * (len(tracking)-1)
-            talk = query_db(sql+' limit 30', [i['tvname'] for i in tracking])
+            sql = 'select * from discuss where name2 is null and (tvname = ?' + ' or tvname = ?' * (len(tracking)-1)
+            talk = query_db(sql+') limit 30', [i['tvname'] for i in tracking])
             talk.reverse()
             re = []
             for i in talk:
